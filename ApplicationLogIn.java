@@ -14,7 +14,7 @@ public class ApplicationLogIn implements ActionListener{
 	JFrame mainFrame;
 	static JTextField databaseField;
 	static JTextField userField;
-	static JTextField passwordField;
+	static JPasswordField  passwordField;
 	JLabel databaseLabel,userLabel,passwordLabel;
 	JButton connectButton;
 	 ApplicationLogIn() throws FileNotFoundException, UnsupportedEncodingException, SQLException
@@ -28,7 +28,7 @@ public class ApplicationLogIn implements ActionListener{
 			passwordLabel = new JLabel("Password:   ");
 			databaseField = new JTextField();
 			userField = new JTextField();
-			passwordField = new JTextField();
+			passwordField = new JPasswordField();
 		
 		
 			
@@ -81,19 +81,20 @@ public class ApplicationLogIn implements ActionListener{
 		if(e.getSource() == connectButton) {
 			String database = databaseField.getText();
 			String user = userField.getText();
+			@SuppressWarnings("deprecation")
 			String password =""+passwordField.getText();
 			try {
 				getTablesToFile(database,user,password);
 			} catch (FileNotFoundException | UnsupportedEncodingException | SQLException e2) {
-				
 				e2.printStackTrace();
+				System.exit(0);
 			}
 			try {
 				new Application();
 				mainFrame.dispose();
 			} catch (FileNotFoundException | UnsupportedEncodingException | SQLException e1) {
-				
 				e1.printStackTrace();
+				System.exit(0);
 			}
 		}
 		
