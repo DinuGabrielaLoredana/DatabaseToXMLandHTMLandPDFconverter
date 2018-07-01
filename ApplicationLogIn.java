@@ -1,10 +1,7 @@
 package external_lib;
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
@@ -12,9 +9,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import com.lowagie.text.DocumentException;
 
 public class ApplicationLogIn implements ActionListener{
 	JFrame mainFrame;
@@ -91,13 +85,14 @@ public class ApplicationLogIn implements ActionListener{
 			try {
 				getTablesToFile(database,user,password);
 			} catch (FileNotFoundException | UnsupportedEncodingException | SQLException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			try {
 				new Application();
+				mainFrame.dispose();
 			} catch (FileNotFoundException | UnsupportedEncodingException | SQLException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			}
 		}
