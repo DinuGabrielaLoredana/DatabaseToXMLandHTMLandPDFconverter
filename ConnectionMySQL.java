@@ -1,6 +1,5 @@
 package external_lib;
 import java.sql.Connection;
-//import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,16 +10,34 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import java.io.*;
 import javax.xml.transform.*;
-import javax.xml.transform.stream.*;
 import com.lowagie.text.DocumentException;
+
+
+
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.fop.apps.FOPException;
+import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.apps.Fop;
+import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.MimeConstants;
+
+
 public class ConnectionMySQL {
 	static String database = ApplicationLogIn.databaseField.getText();
 	static String user = ApplicationLogIn.userField.getText();
+	@SuppressWarnings("deprecation")
 	static String password =""+ApplicationLogIn.passwordField.getText();
 
   public static String ShowTable(String table) throws SQLException {
@@ -97,7 +114,7 @@ public class ConnectionMySQL {
   
   
  
-    public static void XmlToHtml(String table,String path1) throws ParserConfigurationException, SQLException, TransformerException{
+    public static void XmlToHtml(String table,String path1) throws ParserConfigurationException, SQLException, TransformerException, DocumentException, IOException{
     	String path = "fileName.xml";
     	MakeXML(table,path);
     	
@@ -130,14 +147,47 @@ public class ConnectionMySQL {
 	        e.printStackTrace();
 	    }
 
-
+    
   }   
     
-    
-    public static void HtmlToPdf() throws TransformerException, DocumentException, IOException {
-   	 
+    public static void HtmlToPdf(String table,String path1) throws TransformerException, DocumentException, IOException, FOPException, ParserConfigurationException, SQLException {
+    	String path = "fileName.xml";
+    	MakeXML(table,path);
+    	File xsltFile = new File("sampleFO.xsl");
+        // the XML file which provides the input
+        StreamSource xmlSource = new StreamSource(new File("fileName.xml"));
+        // create an instance of fop factory
+        FopFactory fopFactory = FopFactory.newInstance();
+        // a user agent is needed for transformation
+        FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
+        // Setup output
+        OutputStream out;
+        out = new java.io.FileOutputStream(path1);
+
+        try {
+            // Construct fop with desired output format
+            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, out);
+
+            // Setup XSLT
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer(new StreamSource(xsltFile));
+
+            // Resulting SAX events (the generated FO) must be piped through to
+            // FOP
+            Result res = new SAXResult(fop.getDefaultHandler());
+
+            // Start XSLT transformation and FOP processing
+            // That's where the XML is first transformed to XSL-FO and then
+            // PDF is created
+            transformer.transform(xmlSource, res);
+        } finally {
+            out.close();
+        }
     }
+
+
+
+}
     
     	    
     
-}
