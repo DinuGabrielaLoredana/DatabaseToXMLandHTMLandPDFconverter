@@ -9,6 +9,9 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
+import org.apache.fop.apps.FOPException;
+
 import com.lowagie.text.DocumentException;
 public class Application implements ActionListener{
 	
@@ -121,7 +124,21 @@ public class Application implements ActionListener{
        String path = pathField.getText();
        String selectedTable = tableList.getSelectedItem().toString(); 
 
-    	
+    	if(e.getSource()==generatePDF) {
+    		selectedTable = tableList.getSelectedItem().toString();
+    		try {
+				ConnectionMySQL.HtmlToPdf(selectedTable,path);
+			} catch (FOPException | TransformerException | DocumentException | IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ParserConfigurationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+    	}
         
         if(e.getSource()==generateXML)
 	        {
@@ -147,6 +164,12 @@ public class Application implements ActionListener{
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				} catch (TransformerException e1) {
+					e1.printStackTrace();
+				} catch (DocumentException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
         }
